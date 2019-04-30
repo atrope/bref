@@ -405,6 +405,7 @@ RUN set -xe \
         --with-curl \
         --enable-exif \
         --enable-ftp \
+        --enable-soap \
         --with-gettext \
         --enable-mbstring \
         --with-pdo-mysql=shared,mysqlnd \
@@ -422,8 +423,10 @@ RUN set -xe; \
  cp php.ini-production ${INSTALL_DIR}/etc/php/php.ini
 
 RUN pecl install mongodb
-RUN pecl install redis
+RUN pecl install igbinary
 RUN pecl install APCu
+
+RUN pecl install --onlyreqdeps --nobuild redis && cd "$(pecl config-get temp_dir)/redis" && phpize && ./configure --enable-redis-igbinary && make && make install
 
 RUN set -xe; \
     curl -Ls https://elasticache-downloads.s3.amazonaws.com/ClusterClient/PHP-7.0/latest-64bit \
@@ -446,6 +449,16 @@ RUN set -xe; \
  && make install
 
 
+ RUN set -xe; \
+     cd /tmp;\
+     curl -Ls https://github.com/phalcon/cphalcon/archive/v3.4.2.tar.gz \
+     | tar xzC . \
+     && cd cphalcon* && cd build && ./install && cd /tmp && rm -rf /tmp/cphalcon*
+     RUN echo 'ip_resolve=4' >> /etc/yum.conf
+
+RUN LD_LIBRARY_PATH= yum install -y ImageMagick-devel
+RUN pecl install imagick
+RUN echo 'ip_resolve=4' >> /etc/yum.conf
 # Strip all the unneeded symbols from shared libraries to reduce size.
 RUN find ${INSTALL_DIR} -type f -name "*.so*" -o -name "*.a"  -exec strip --strip-unneeded {} \;
 RUN find ${INSTALL_DIR} -type f -executable -exec sh -c "file -i '{}' | grep -q 'x-executable; charset=binary'" \; -print|xargs strip --strip-all
@@ -487,6 +500,7 @@ RUN mkdir -p /opt
 WORKDIR /opt
 # Copy everything we built above into the same dir on the base AmazonLinux container.
 COPY --from=php_builder /opt /opt
+RUN echo 'ip_resolve=4' >> /etc/yum.conf
 
 # Install zip: we will need it later to create the layers as zip files
 RUN LD_LIBRARY_PATH= yum -y install zip
