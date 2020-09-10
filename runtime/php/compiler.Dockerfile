@@ -8,7 +8,7 @@
 # https://docs.aws.amazon.com/lambda/latest/dg/current-supported-versions.html
 # AWS has kindly provided us with it as a base docker image.
 # https://github.com/aws/amazon-linux-docker-images/tree/2017.03
-FROM amazonlinux:2017.03
+FROM amazonlinux:latest
 LABEL authors="Bubba Hines <bubba@stechstudio.com>"
 LABEL vendor1="Signature Tech Studio, Inc."
 LABEL vendor2="bref"
@@ -20,7 +20,7 @@ WORKDIR /tmp
 
 
 # Lambda is based on 2017.03. Lock YUM to that release version.
-RUN sed -i 's/releasever=latest/releaserver=2017.03/' /etc/yum.conf
+RUN sed -i 's/releasever=latest/releaserver=2018.03/' /etc/yum.conf
 
 
 RUN set -xe \

@@ -19,11 +19,3 @@ distribution: build
 		--volume ${PWD}/export.sh:/export.sh:ro \
 		bref/runtime/php-72:latest \
 		/export.sh
-	# Run the export script for PHP 7.3
-	# docker run --rm \
-	# 	--env PHP_SHORT_VERSION=73 \
-	# 	--volume ${PWD}/layers:/layers:ro \
-	# 	--volume ${PWD}/../export:/export \
-	# 	--volume ${PWD}/export.sh:/export.sh:ro \
-	# 	bref/runtime/php-73:latest \
-	# 	/export.sh
